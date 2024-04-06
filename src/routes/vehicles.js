@@ -12,8 +12,20 @@ const TILE38_KEY = process.env.TILE38_KEY || "vehicles";
 const TILE38_LIMIT = process.env.TILE38_LIMIT || 1000;
 
 router.get("/", (req, res) => {
-  let bbox, bounds;
+  let bbox,
+    bounds,
+    routeType = [];
 
+  // --- Validate routeType if given ---
+  if (req.query.routeType !== undefined) {
+    if (!/^[0-9]+(,[0-9]+)*$/.test(req.query.routeType)) {
+      res.status(500).send("Error: invalid input for routeType");
+      return false;
+    }
+    routeType = req.query.routeType.split(",");
+  }
+
+  // --- Filter by bounding box ---
   if (req.query.bbox) {
     bbox = req.query.bbox.split(",");
     bounds = [
@@ -23,13 +35,24 @@ router.get("/", (req, res) => {
       parseFloat(bbox[3], 10),
     ];
     if (bounds?.includes(NaN)) {
-      res.status(500).send("Error: Failed to parse bbox");
+      res.status(500).send("Error: invalid input for bbox");
+      return false;
     } else {
-      // Return only features within bounds
-      let query = tile38.client
-        .intersectsQuery(TILE38_KEY)
-        .limit(TILE38_LIMIT)
-        .bounds(...bounds);
+      //
+      let query;
+      if (routeType.length > 0) {
+        query = tile38.client
+          .intersectsQuery(TILE38_KEY)
+          .limit(TILE38_LIMIT)
+          .whereIn("properties.rt", ...routeType)
+          .bounds(...bounds);
+      } else {
+        query = tile38.client
+          .intersectsQuery(TILE38_KEY)
+          .limit(TILE38_LIMIT)
+          .bounds(...bounds);
+      }
+      // Execute query
       query
         .execute()
         .then((data) => {
@@ -40,9 +63,19 @@ router.get("/", (req, res) => {
           res.status(500).send(`Error: ${err}`);
         });
     }
-  } else {
-    // Return all features
-    let query = tile38.client.scanQuery(TILE38_KEY).limit(TILE38_LIMIT);
+  }
+  // --- All features ---
+  else {
+    let query;
+    if (routeType.length > 0) {
+      query = tile38.client
+        .scanQuery(TILE38_KEY)
+        .limit(TILE38_LIMIT)
+        .whereIn("properties.rt", ...routeType);
+    } else {
+      query = tile38.client.scanQuery(TILE38_KEY).limit(TILE38_LIMIT);
+    }
+    // Execute query
     query
       .execute()
       .then((data) => {
