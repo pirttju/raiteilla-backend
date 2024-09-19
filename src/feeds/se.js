@@ -57,6 +57,8 @@ async function getDepartures(shortCode) {
         const r = {
           trainType: "",
           trainNumber: t.AdvertisedTrainIdent,
+          origin: "",
+          destination: "",
           departure: t.AdvertisedTimeAtLocation,
           expectedDeparture: t.EstimatedTimeAtLocation,
           track: t.TrackAtLocation,
