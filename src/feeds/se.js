@@ -55,6 +55,7 @@ async function getDepartures(shortCode) {
     if (data.RESPONSE?.RESULT?.length > 0) {
       for (const t of data.RESPONSE.RESULT[0].TrainAnnouncement) {
         const r = {
+          trainType: "",
           trainNumber: t.AdvertisedTrainIdent,
           departure: t.AdvertisedTimeAtLocation,
           expectedDeparture: t.EstimatedTimeAtLocation,
