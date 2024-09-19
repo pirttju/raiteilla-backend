@@ -2,7 +2,7 @@ const baseUrl = "https://rata.digitraffic.fi/api/v2/graphql/graphql";
 
 async function getDepartures(shortCode) {
   try {
-    const query = `{trainsByStationAndQuantity( station: "${shortCode}" arrivedTrains: 0 arrivingTrains: 5 departedTrains: 0 departingTrains: 5) { trainNumber departureDate trainType { name } commuterLineid cancelled timeTableRows(orderBy: { scheduledTime: ASCENDING }) { station { name shortCode } type commercialTrack scheduledTime liveEstimateTime actualTime differenceInMinutes cancelled}}}`;
+    const query = `{trainsByStationAndQuantity( station: "${shortCode}" arrivedTrains: 0 arrivingTrains: 0 departedTrains: 0 departingTrains: 10 trainCategories: ["Commuter", "Long-Distance"]) { trainNumber departureDate trainType { name } commuterLineid cancelled timeTableRows(orderBy: { scheduledTime: ASCENDING }) { station { name shortCode } type commercialTrack scheduledTime liveEstimateTime cancelled}}}`;
     const response = await fetch(baseUrl, {
       method: "POST",
       headers: {
@@ -25,28 +25,15 @@ async function getDepartures(shortCode) {
         destination: t.timeTableRows[t.timeTableRows.length - 1].station.name,
       };
 
-      let row = 0;
-      const maxRow = t.timeTableRows.length - 1;
       for (const i of t.timeTableRows) {
-        if (i.station.shortCode === shortCode && i.type === "ARRIVAL") {
-          r.arrival = i.scheduledTime;
-          r.expectedArrival = i.liveEstimateTime;
-          r.arrivalCancelled = i.cancelled;
-          r.track = i.commercialTrack;
-          r.timeForSorting = i.liveEstimateTime || i.scheduledTime;
-          if (row === maxRow) {
-            trains.push(r);
-          }
-        }
         if (i.station.shortCode === shortCode && i.type === "DEPARTURE") {
           r.departure = i.scheduledTime;
           r.expectedDeparture = i.liveEstimateTime;
-          r.departureCancelled = i.cancelled;
+          r.cancelled = i.cancelled;
           r.track = i.commercialTrack;
           r.timeForSorting = i.liveEstimateTime || i.scheduledTime;
           trains.push(r);
         }
-        row++;
       }
     }
     result = trains.sort((a, b) => {

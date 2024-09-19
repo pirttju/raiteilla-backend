@@ -24,6 +24,7 @@ async function getDepartures(shortCode) {
       "</OR>" +
       `<EQ name='LocationSignature' value='${shortCode}' />` +
       "<EQ name='ActivityType' value='Avgang' />" +
+      "<EQ name='Advertised' value='true' />" +
       "</AND>" +
       "</FILTER>" +
       // Just include wanted fields to reduce response size.
@@ -55,14 +56,14 @@ async function getDepartures(shortCode) {
     if (data.RESPONSE?.RESULT?.length > 0) {
       for (const t of data.RESPONSE.RESULT[0].TrainAnnouncement) {
         const r = {
-          trainType: "",
           trainNumber: t.AdvertisedTrainIdent,
+          trainType: "",
           origin: "",
           destination: "",
           departure: t.AdvertisedTimeAtLocation,
           expectedDeparture: t.EstimatedTimeAtLocation,
+          cancelled: t.Canceled,
           track: t.TrackAtLocation,
-          departureCancelled: t.Canceled,
         };
 
         if (t.FromLocation?.length > 0) {
