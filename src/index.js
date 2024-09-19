@@ -3,6 +3,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const departures = require("./routes/departures");
 const vehicles = require("./routes/vehicles");
 
 // Express configuration
@@ -12,6 +13,7 @@ app.get("/", (req, res) => {
   res.status(200).send("Raiteilla Backend");
 });
 
+app.use("/departures", departures);
 app.use("/vehicles", vehicles);
 
 app.listen(EXPRESS_PORT, () => {
