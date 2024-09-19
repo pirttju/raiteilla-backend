@@ -6,7 +6,18 @@ const router = express.Router();
 const feeds = require("../feeds");
 
 router.get("/", async (req, res) => {
+  if (!req.query.station) {
+    res.status(400).send(`Missing parameter station`);
+    return;
+  }
+
   const key = req.query.station.split(":"); // feed_id:short_code
+
+  if (key.length != 2) {
+    res.status(400).send(`Improperly formatted parameter station`);
+    return;
+  }
+
   let data = {};
 
   switch (key[0]) {
@@ -23,6 +34,7 @@ router.get("/", async (req, res) => {
       data = await feeds.no.getDepartures(key[1]);
       break;
     case "se":
+      data = await feeds.se.getDepartures(key[1]);
       break;
     default:
     // return empty data

@@ -11,8 +11,11 @@ const template = [
     destination: "DestinationName",
     arrival: "MonitoredCall/AimedArrivalTime",
     expectedArrival: "MonitoredCall/ExpectedArrivalTime",
+    arrivalCancelled: 'boolean(MonitoredCall/ArrivalStatus = "cancelled")',
     departure: "MonitoredCall/AimedDepartureTime",
     expectedDeparture: "MonitoredCall/ExpectedDepartureTime",
+    departureCancelled: 'boolean(MonitoredCall/DepartureStatus = "cancelled")',
+    track: "MonitoredCall/DeparturePlatformName",
   },
 ];
 
