@@ -17,9 +17,10 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "pg-monitor": "2.0.0",
-    "pg-promise": "11.4.3",
-    "tile38": "^0.9.4"
+    "express": "^4.21.0",
+    "pg-monitor": "^2.1.0",
+    "pg-promise": "^11.9.1",
+    "tile38": "^0.9.4",
+    "camaro": "^6.2.3"
   }
 }
