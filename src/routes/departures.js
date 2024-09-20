@@ -27,8 +27,10 @@ router.get("/", async (req, res) => {
     case "gb":
       break;
     case "ie":
+      data = await feeds.ie.getDepartures(key[1]);
       break;
     case "nl":
+      data = await feeds.nl.getDepartures(key[1]);
       break;
     case "no":
       data = await feeds.no.getDepartures(key[1]);
